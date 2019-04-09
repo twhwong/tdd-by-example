@@ -7,8 +7,8 @@ package guru.springframework;
  */
 public class Money implements Expression {
 
-    protected int amount;
-    protected String currency;
+    final int amount;
+    private final String currency;
 
     public Money(int amount, String currency) {
         this.amount = amount;
@@ -26,20 +26,16 @@ public class Money implements Expression {
     public String currency(){
         return currency;
     }
-    public Money times(int multiplier) {
-        return new Money(amount * multiplier, this.currency);
-    }
 
     public boolean equals(Object obj) {
         Money money = (Money) obj;
         // check the amount and not the object itself.
-//        return amount == money.amount && getClass().equals(obj.getClass());
         return amount == money.amount && currency == money.currency;
     }
 
     @Override
-    public Money reduce(String to) {
-        return this;
+    public Money reduce(Bank bank, String to) {
+        return new Money(amount / bank.rate(this.currency, to), to);
     }
 
     @Override
@@ -50,11 +46,17 @@ public class Money implements Expression {
                 '}';
     }
 
+    @Override
+    public Expression times(int multiplier) {
+        return new Money(amount * multiplier, this.currency);
+    }
+
     /* Terms
     Augend - first value in an addition operation
     Addend - second value in an addition operation
      */
-    public Expression plus(Money addend) {
+    @Override
+    public Expression plus(Expression addend) {
         return new Sum(this, addend);
     }
 }

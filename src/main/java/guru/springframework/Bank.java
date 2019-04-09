@@ -1,22 +1,32 @@
 package guru.springframework;
 
-import com.sun.jdi.event.MonitorContendedEnteredEvent;
+import java.util.HashMap;
 
 /**
  * 08-04-19
  *
  * @author Tom
  */
-public class Bank {
+class Bank {
+
+    private final HashMap<Pair, Integer> rateMap = new HashMap<>();
+
     Money reduce(Expression source, String toCurrency) {
-        return source.reduce(toCurrency);
+        return source.reduce(this, toCurrency);
+    }
 
-        //        Sum sum = (Sum) source;
-//        int amount = sum.augend.amount + sum.addend.amount;
-//        return new Money(amount, toCurrency);
+    public void addRate(String from, String to, int rate) {
+        rateMap.put(new Pair(from, to), rate);
+        //System.out.println(rateMap.values());
+    }
 
-//        if (source instanceof Money) return (Money) source;
-//        Sum sum = (Sum) source;
-//        return sum.reduce(toCurrency);
+    public int rate(String from, String to) {
+//        return (from.equals("CHF") && to.equals("USD")) ? 2 : 1;
+        if (from.equals(to)) {
+            return 1;
+        } else {
+//            System.out.println(rateMap.get(new Pair(from, to)));
+            return rateMap.get(new Pair(from, to));
+        }
     }
 }
